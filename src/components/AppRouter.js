@@ -1,33 +1,32 @@
-import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom'
-import { LOGIN_ROUTE, TABLE_ROUTE } from '../utils/consts';
-import {privateRoutes, publicRoutes} from './routes'
-import 'core-js/es/array';
+import React, {useContext} from 'react';
+import {Route, Switch, Redirect} from 'react-router-dom'
+import {privateRoutes, publicRoutes} from "./routes";
+import {LOGIN_ROUTE, TABLE_ROUTE} from "../utils/consts";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {Context} from "../index";
 
 const AppRouter = () => {
-
-    const user = false;
+    const {auth} = useContext(Context)
+    const [user] = useAuthState(auth)
 
     return user ?
-            (
-                <Switch>
-                    {privateRoutes.map(({path, Component}) =>
-                        <Route path = {path} component = {Component} exact = {true} />
-                    )}
-
-                    <Redirect to = {TABLE_ROUTE} />
-                </Switch>
-            )
-            :
-            (
-                <Switch>
-                     {publicRoutes.map(({path, Component}) =>
-                        <Route path = {path} component = {Component} exact = {true} />
-                    )}
-
-                    <Redirect to = {LOGIN_ROUTE} />  
-                </Switch>
-            )
-}
+        (
+            <Switch>
+                {privateRoutes.map(({path, Component}) =>
+                    <Route key={path} path={path} component={Component} exact={true}/>
+                )}
+                <Redirect to={TABLE_ROUTE}/>
+            </Switch>
+        )
+        :
+        (
+            <Switch>
+                {publicRoutes.map(({path, Component}) =>
+                    <Route key={path} path={path} component={Component} exact={true}/>
+                )}
+                <Redirect to={LOGIN_ROUTE}/>
+            </Switch>
+        )
+};
 
 export default AppRouter;

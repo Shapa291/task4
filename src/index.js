@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { createContext } from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
-import { initializeApp } from "firebase/app";
-import firebase from "firebase"
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
 
-const firebaseConfig = {
+// Initialize Firebase
+firebase.initializeApp({
   apiKey: "AIzaSyBklgbYKfsJvSjIjENDgtMmnLDdgi6Ke38",
   authDomain: "task4-70450.firebaseapp.com",
   projectId: "task4-70450",
@@ -14,16 +16,20 @@ const firebaseConfig = {
   messagingSenderId: "703502022322",
   appId: "1:703502022322:web:35b8609a44457f19b77bab",
   measurementId: "G-KY4DEXXC72"
-};
+});
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = firebase.auth();
+export const Context = createContext(null)
 
+const auth = firebase.auth()
+const firestore = firebase.firestore();
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Context.Provider value={{
+      firebase,
+      auth,
+      firestore
+  }}>
+      <App />
+    </Context.Provider>,
   document.getElementById('root')
 );

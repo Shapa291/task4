@@ -1,7 +1,20 @@
 import { Box, Button, Container, Grid } from '@material-ui/core';
-import React from 'react';
+import React, { useContext } from 'react';
+import { Context } from '..';
+
+
+import { facebookProvider, gitHubProvider, googleProvider, twitterProvider } from './authMethods';
+import socialMediaAuth from './auth';
 
 const Login = () => {
+
+        const {auth} = useContext(Context)
+
+        const handleOnClick = async (provider) => {
+            const res = await socialMediaAuth(provider)
+            console.log(res);
+        };
+
         return (
             <Container>
                 <Grid container
@@ -15,9 +28,9 @@ const Login = () => {
                         direction = {"column"}
                     >
                         <Box p = {10}>
-                            <Button style = {{marginBottom: 30}} variant = {"outlined"}>Войти с помощью Google</Button>
-                            <Button style = {{marginBottom: 30}} variant = {"outlined"}>Войти с помощью Facebok</Button>
-                            <Button variant = {"outlined"}>Войти с помощью Twitter</Button>
+                            <Button onClick = {() => handleOnClick(facebookProvider)} style = {{marginBottom: 30}} variant = {"outlined"}>Войти с помощью Facebook</Button>
+                            <Button onClick = {() => handleOnClick(gitHubProvider)} style = {{marginBottom: 30}} variant = {"outlined"}>Войти с помощью Github</Button>
+                            <Button onClick = {() => handleOnClick(googleProvider)} style = {{marginBottom: 30}} variant = {"outlined"}>Войти с помощью Google</Button>
                         </Box>
                     </Grid>
                 </Grid>
