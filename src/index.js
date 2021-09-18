@@ -1,11 +1,11 @@
-import React, { createContext } from 'react';
+import React, {createContext } from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Initialize Firebase
 firebase.initializeApp({
@@ -23,7 +23,9 @@ export const Context = createContext(null)
 const auth = firebase.auth()
 const firestore = firebase.firestore();
 
+
 ReactDOM.render(
+  <React.StrictMode>
   <Context.Provider value={{
       firebase,
       auth,
@@ -31,5 +33,6 @@ ReactDOM.render(
   }}>
       <App />
     </Context.Provider>,
+  </React.StrictMode>,
   document.getElementById('root')
 );

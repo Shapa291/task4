@@ -1,18 +1,12 @@
 import { Box, Button, Container, Grid } from '@material-ui/core';
-import React, { useContext } from 'react';
-import { Context } from '..';
-
-
-import { facebookProvider, gitHubProvider, googleProvider, twitterProvider } from './authMethods';
+import React from 'react';
+import { yahooProvider, gitHubProvider, googleProvider } from './authMethods';
 import socialMediaAuth from './auth';
-
+import ChartBox from './chart';
 const Login = () => {
 
-        const {auth} = useContext(Context)
-
         const handleOnClick = async (provider) => {
-            const res = await socialMediaAuth(provider)
-            console.log(res);
+             await socialMediaAuth(provider)
         };
 
         return (
@@ -20,7 +14,7 @@ const Login = () => {
                 <Grid container
                     style = {{height: window.innerHeight - 50, marginTop: 20}}
                     alignItems = {"baseline"}
-                    justify = {"center"}
+                    justifyContent = {"center"}
                 >
                     <Grid style = {{width: 400, backgroundColor: 'lightgray'}}
                         container
@@ -28,10 +22,11 @@ const Login = () => {
                         direction = {"column"}
                     >
                         <Box p = {10}>
-                            <Button onClick = {() => handleOnClick(facebookProvider)} style = {{marginBottom: 30}} variant = {"outlined"}>Войти с помощью Facebook</Button>
+                            <Button onClick = {() => handleOnClick(yahooProvider)} style = {{marginBottom: 30}} variant = {"outlined"}>Войти с помощью Yahoo</Button>
                             <Button onClick = {() => handleOnClick(gitHubProvider)} style = {{marginBottom: 30}} variant = {"outlined"}>Войти с помощью Github</Button>
                             <Button onClick = {() => handleOnClick(googleProvider)} style = {{marginBottom: 30}} variant = {"outlined"}>Войти с помощью Google</Button>
                         </Box>
+                        <ChartBox/>
                     </Grid>
                 </Grid>
             </Container>

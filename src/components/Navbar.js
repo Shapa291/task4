@@ -15,7 +15,7 @@ const Navbar = () => {
     return (
         <AppBar  color={"primary"} position="static" >
             <Toolbar variant={"dense"}>
-                <Grid container justify={"flex-end"}>
+                <Grid container justifyContent={"flex-end"}>
                     {user ?
                         <Button onClick={() => auth.signOut()} variant={"outlined"}>Выйти</Button>
                         :

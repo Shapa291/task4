@@ -1,18 +1,12 @@
-import React, { useContext } from "react";
+import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import AppRouter from "./components/AppRouter"
-import {useAuthState} from "react-firebase-hooks/auth";
-import { Context } from ".";
-
-
+import Chart from "./components/chart";
 
 function App() {
-
-  const {auth} = useContext(Context)
-  const [loading] = useAuthState(auth)
-
   
+
   return (
     <BrowserRouter>
       <Navbar/>
