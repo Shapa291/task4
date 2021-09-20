@@ -1,34 +1,31 @@
-import React, { useContext , useState } from 'react';
+import React, { useContext , useState, useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Context } from '..';
 import 'firebase/compat/firestore';
-import { getDatabase, ref, update, onValue} from "firebase/database";
-import СhangeNetwork from './increment';
+import { getDatabase, ref, update, onValue, remove} from "firebase/database";
 import 'firebase/compat/auth';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import filterFactory, { selectFilter, textFilter } from 'react-bootstrap-table2-filter';
+import filterFactory, {  textFilter } from 'react-bootstrap-table2-filter';
 import '../App.css'
+import { signOut } from "firebase/auth";
 
 
 const Tablee = () => {
 
     const {auth} = useContext(Context)
-    const [user] = useAuthState(auth)
-
-    const [selectedUsers, setSelectedUser] = useState([])
-
+    let [user] = useAuthState(auth)
     const database = getDatabase();
-
-    СhangeNetwork(user.providerData[0].providerId)
-    console.log(user);
-    const userRef = ref(database, 'users')
-
+  
     let eMail = (user.providerData[0].providerId).split('@')[0]
     if (user.email == null )
         {
            eMail = (user.providerData[0].providerId).split('.')[0] + ' user'; 
            update(ref(database, 'users/' +  user.uid), {
+            socialNetwor: user.providerData[0].providerId,
+            uid: user.uid,
+            date_of_reg: user.metadata.creationTime,
+            date_of_last: user.metadata.lastSignInTime,
             name: eMail,
             email: eMail,
             status: "active"
@@ -42,7 +39,7 @@ const Tablee = () => {
         socialNetwor: user.providerData[0].providerId,
         date_of_reg: user.metadata.creationTime,
         date_of_last: user.metadata.lastSignInTime,
-        status: "active "
+        status: "active"
     })
     } else
      update(ref(database, 'users/' +  user.uid), {
@@ -55,27 +52,30 @@ const Tablee = () => {
         status: "active"
     }) 
 
-    onValue(userRef, (snapshot) => {
-        if (!snapshot.exists(user.uid)){
-        } 
-    })
+    const [data, setData] = useState([]);
 
-    const data = []
-     const dbRef = ref(database, 'users');
-     onValue(dbRef, (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-           const val = childSnapshot.val();
-           data.push(val)
+    useEffect(() => {
+      const reference = ref(database, 'users/')
+      onValue(reference, snapshot => {
+        const fetchData = []
+        snapshot.forEach(el => {
+          fetchData.push(el.val())
         })
-    })
+        setData(fetchData)
+      })
+    }, [database])
 
-    const result = Object.values(data).map(v => Object.values(v))
+    
+    let userTableData = []
 
-    const selectOptions = {
-      0: 'yahoo.com',
-      1: 'google.com',
-      2: 'github.com'
-    };
+    function pushData(userUid) {
+      userTableData.push(userUid)
+    }
+
+    function sliceData(userUid) {
+      const  index = userTableData.indexOf(userUid)
+      userTableData.splice(index, 1)
+    }
 
     const columns = [
         
@@ -90,25 +90,69 @@ const Tablee = () => {
 
       const selectRow = {
         mode: 'checkbox',
-        clickToSelect: true
+        clickToSelect: true, 
+        hideSelectAll: true,
+        onSelect: (row, isSelect,) => {
+          if (isSelect) pushData(row.uid);
+          if (!isSelect) sliceData(row.uid);
+          console.log(userTableData);
+        },
       };
 
       const defaultSorted = [{
         dataField: 'name',
         order: 'desc'
       }];
+      
+      const onBan = (props) => {
+          for (let i = 0; i < props.length; ++i){
+          { 
+           if(props[i] === user.uid) signOut(auth)
+            update(ref(database, 'users/' +  props[i]), {
+              status: "ban"
+          })
+          }
+        }
+      };
+      const onDisban = (props) => {
+          for (let i = 0; i < props.length; ++i){
+            update(ref(database, 'users/' +  props[i]), {
+              status: "active"
+          }) 
+        }
+      };
 
-    console.log(selectedUsers);
+      const onDelete = (props) => {
+        for (let i = 0; i < props.length; ++i){
+          
+          remove(ref(database, 'users/' +  props[i])) 
+          if(props[i] === user.uid) signOut(auth)
+      }        
+      };
+    
+
         return (
-            <div className = 'tablee'>
-                <div className = 'toolbarrr' class="btn-group" role="group" aria-label="Basic example">
-                  <button type="button" class="btn btn-primary">Left</button>
-                  <button type="button" class="btn btn-primary">Middle</button>
-                  <button type="button" class="btn btn-primary">Right</button>
-                  <input type="text" placeholder="UID" ></input>
-            </div>
-                <BootstrapTable keyField='uid' data={data}  columns={columns} defaultSorted={ defaultSorted } filter={ filterFactory() }  selectRow={ selectRow } />
-             </div>
+          <div className="tablee">
+
+            <button className="toolbar-btn" type="submit"  onClick={function(){onDelete(userTableData)}}>
+              Delete
+            </button>
+            <button className="toolbar-btn" type="submit"  onClick={function(){onBan(userTableData)}}>
+              Ban
+            </button>
+            <button className="toolbar-btn" type = "button"  onClick={function(){onDisban(userTableData)}}>
+              Disban
+            </button>
+
+          <BootstrapTable
+            keyField="uid"
+            data={data}
+            columns={columns}
+            defaultSorted={defaultSorted}
+            filter={filterFactory()}
+            selectRow={selectRow}
+          />
+        </div>
         );
 }
 

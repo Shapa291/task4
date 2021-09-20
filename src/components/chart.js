@@ -1,4 +1,4 @@
-import { PieChart, Pie, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie,  Tooltip } from 'recharts';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
@@ -22,8 +22,6 @@ const ChartBox = () => {
       fetchInfo();
     }, [])
 
-    console.log('!!!!!');
-    console.log(info[0]);
     let dataInfo = info[0]
     try {
     var google = dataInfo.Google
